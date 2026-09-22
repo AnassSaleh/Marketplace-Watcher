@@ -1,0 +1,252 @@
+{
+  "name": "xbox",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1ad0649a-2432-4037-9855-706ab9f76a8d",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 3
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        -144
+      ],
+      "id": "5f9b6c46-c709-4aed-b344-55d36e17a12e",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "qhjn5f4NMI0rtW22e",
+          "mode": "list",
+          "cachedResultName": "Carousell Listings Scraper (piotrv1001/carousell-listings-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/qhjn5f4NMI0rtW22e/input"
+        },
+        "customBody": "{\n  \"maxRequestsPerCrawl\": 1,\n  \"proxyConfiguration\": {\n    \"useApifyProxy\": true,\n    \"apifyProxyGroups\": [\"RESIDENTIAL\"],\n    \"apifyProxyCountry\": \"MY\"\n  },\n  \"scrapeDetails\": false,\n  \"startUrls\": [\n    {\n      \"url\": \"https://www.carousell.com.my/search/xbox%20series?sort_by=3\"\n    }\n  ]\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        288,
+        -16
+      ],
+      "id": "a2376701-e22a-4cf6-acbd-84ede55bd3f2",
+      "name": "Run an Actor and get dataset",
+      "credentials": {
+        "apifyApi": {
+          "id": "gZX61upJkFLfY42N",
+          "name": "Apify account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0ead4ba6-4a0b-4eb2-b0e8-12c6c43382ac",
+              "name": "nameItem",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "7b7f578f-e55d-4302-aec0-b5ce3378348e",
+              "name": "time",
+              "value": "={{ $json.scrapedAt }}",
+              "type": "string"
+            },
+            {
+              "id": "492c631f-2bf0-448e-a548-8b99c80129b4",
+              "name": "url",
+              "value": "={{ $json.url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        528,
+        -16
+      ],
+      "id": "fc8b2538-72ac-4f43-90af-7fce4294cab1",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8d8118a6-837c-4c17-b66b-5bc78e6aea1e",
+              "leftValue": "={{ $json.nameItem }}",
+              "rightValue": "xbox series",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        -16
+      ],
+      "id": "fecbb82b-8235-45ac-9132-66b3ebeea466",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "removeItemsSeenInPreviousExecutions",
+        "dedupeValue": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        976,
+        -112
+      ],
+      "id": "327c2b3b-8d6f-452b-aa22-385b6b830fa5",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "authentication": "webhook",
+        "content": "=there is an xbox on the market:  {{ $json.nameItem }}  {{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.discord",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        -112
+      ],
+      "id": "6d3e2b0e-f18d-42ce-81f0-ba04c5952b3c",
+      "name": "Discord",
+      "webhookId": "bbfa57fa-bb84-4735-87fe-fdbf74b2623b",
+      "credentials": {
+        "discordWebhookApi": {
+          "id": "Bg3Gc9quUiGLWSsL",
+          "name": "My discord Xbox"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Run an Actor and get dataset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run an Actor and get dataset": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Discord",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "1ef706c9-90be-4dc6-9921-5f4a7a177044",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "de614678027152b528f7795728f35e290aa148d6784de9e98abb5e1be42efcdd"
+  },
+  "nodeGroups": [],
+  "id": "Vz2RO6b87O1Nm1Tt",
+  "tags": []
+}
