@@ -6,8 +6,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        0,
-        0
+        -16,
+        -96
       ],
       "id": "1ad0649a-2432-4037-9855-706ab9f76a8d",
       "name": "When clicking ‘Execute workflow’"
@@ -18,7 +18,7 @@
           "interval": [
             {
               "field": "hours",
-              "hoursInterval": 3
+              "hoursInterval": 2
             }
           ]
         }
@@ -26,38 +26,11 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.4,
       "position": [
-        0,
-        -144
+        -16,
+        -272
       ],
       "id": "5f9b6c46-c709-4aed-b344-55d36e17a12e",
       "name": "Schedule Trigger"
-    },
-    {
-      "parameters": {
-        "operation": "Run actor and get dataset",
-        "actorId": {
-          "__rl": true,
-          "value": "qhjn5f4NMI0rtW22e",
-          "mode": "list",
-          "cachedResultName": "Carousell Listings Scraper (piotrv1001/carousell-listings-scraper)",
-          "cachedResultUrl": "https://console.apify.com/actors/qhjn5f4NMI0rtW22e/input"
-        },
-        "customBody": "{\n  \"maxRequestsPerCrawl\": 1,\n  \"proxyConfiguration\": {\n    \"useApifyProxy\": true,\n    \"apifyProxyGroups\": [\"RESIDENTIAL\"],\n    \"apifyProxyCountry\": \"MY\"\n  },\n  \"scrapeDetails\": false,\n  \"startUrls\": [\n    {\n      \"url\": \"https://www.carousell.com.my/search/xbox%20series?sort_by=3\"\n    }\n  ]\n}"
-      },
-      "type": "@apify/n8n-nodes-apify.apify",
-      "typeVersion": 1,
-      "position": [
-        288,
-        -16
-      ],
-      "id": "a2376701-e22a-4cf6-acbd-84ede55bd3f2",
-      "name": "Run an Actor and get dataset",
-      "credentials": {
-        "apifyApi": {
-          "id": "gZX61upJkFLfY42N",
-          "name": "Apify account 2"
-        }
-      }
     },
     {
       "parameters": {
@@ -70,15 +43,15 @@
               "type": "string"
             },
             {
-              "id": "7b7f578f-e55d-4302-aec0-b5ce3378348e",
-              "name": "time",
-              "value": "={{ $json.scrapedAt }}",
+              "id": "492c631f-2bf0-448e-a548-8b99c80129b4",
+              "name": "url",
+              "value": "==={{ ($json.url || $json.link || $json.listingUrl || '').split('?')[0] }}",
               "type": "string"
             },
             {
-              "id": "492c631f-2bf0-448e-a548-8b99c80129b4",
-              "name": "url",
-              "value": "={{ $json.url }}",
+              "id": "9a4a4b63-e72d-4d50-b911-423c57fd1478",
+              "name": "price",
+              "value": "={{ $json.price }}",
               "type": "string"
             }
           ]
@@ -147,7 +120,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=there is an xbox on the market:  {{ $json.nameItem }}  {{ $json.url }}",
+        "content": "=there is an xbox on the market: {{ $json.price }} {{ $json.nameItem }}  {{ $json.url }} ",
         "options": {}
       },
       "type": "n8n-nodes-base.discord",
@@ -165,6 +138,33 @@
           "name": "My discord Xbox"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "Run actor and get dataset",
+        "actorId": {
+          "__rl": true,
+          "value": "9XAXWuXpnFXAMmciQ",
+          "mode": "list",
+          "cachedResultName": "Carousell Listings Scraper (automation-lab/carousell-listings-scraper)",
+          "cachedResultUrl": "https://console.apify.com/actors/9XAXWuXpnFXAMmciQ/input"
+        },
+        "customBody": "{\n  \"startUrls\": [\n    { \"url\": \"https://www.carousell.com.my/search/xbox%20series?sort_by=3\" }\n  ],\n  \"maxItems\": 5,\n  \"includeDetails\": false,\n  \"proxyType\": \"datacenter\"\n}"
+      },
+      "type": "@apify/n8n-nodes-apify.apify",
+      "typeVersion": 1,
+      "position": [
+        320,
+        -16
+      ],
+      "id": "56ab1391-217e-431d-823d-799a6914e3e8",
+      "name": "Run an Actor and get dataset1",
+      "credentials": {
+        "apifyApi": {
+          "id": "GK9ZArHcLcMBeYVx",
+          "name": "Apify account 3"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -173,7 +173,7 @@
       "main": [
         [
           {
-            "node": "Run an Actor and get dataset",
+            "node": "Run an Actor and get dataset1",
             "type": "main",
             "index": 0
           }
@@ -184,18 +184,7 @@
       "main": [
         [
           {
-            "node": "Run an Actor and get dataset",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Run an Actor and get dataset": {
-      "main": [
-        [
-          {
-            "node": "Edit Fields",
+            "node": "Run an Actor and get dataset1",
             "type": "main",
             "index": 0
           }
@@ -234,14 +223,29 @@
           }
         ]
       ]
+    },
+    "Run an Actor and get dataset1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": true,
+  "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Asia/Kuala_Lumpur",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
   },
-  "versionId": "1ef706c9-90be-4dc6-9921-5f4a7a177044",
+  "versionId": "71fb8200-e2c7-4b98-9aa3-50727e32f631",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "de614678027152b528f7795728f35e290aa148d6784de9e98abb5e1be42efcdd"
