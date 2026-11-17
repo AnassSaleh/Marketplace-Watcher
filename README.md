@@ -2,9 +2,9 @@
 
 # 🛒 Marketplace Watcher
 
-**Get a Discord alert the moment a new listing appears on Carousell Malaysia.**
+**Never miss a deal again. Pick any product, and get a Discord alert the moment someone lists it.**
 
-An automation workflow built with n8n and Apify that watches the marketplace for you.
+A no-code automation built with n8n and Apify that watches Carousell Malaysia for you, 24/7.
 
 ![n8n](https://img.shields.io/badge/n8n-workflow-EA4B71?style=for-the-badge&logo=n8n&logoColor=white)
 ![Apify](https://img.shields.io/badge/Apify-scraper-97D700?style=for-the-badge&logo=apify&logoColor=black)
@@ -17,15 +17,31 @@ An automation workflow built with n8n and Apify that watches the marketplace for
 
 ## 💡 The Idea
 
-Good deals on second-hand marketplaces sell in minutes. Refreshing the page all day is not realistic.
+The best deals on second-hand marketplaces are gone in minutes. Whoever sees the listing first gets it. Nobody can refresh a page all day.
 
-**Marketplace Watcher** checks Carousell every 2 hours, finds listings that match a keyword (here: `xbox series`), ignores anything it has already seen, and sends only the **new** ones to Discord.
+**Marketplace Watcher** does the refreshing for you. You give it a keyword. It checks Carousell on a schedule, ignores anything it has already shown you, and sends only the **new** listings straight to your phone through Discord.
+
+### What would you track?
+
+| 🎮 Gaming | 📱 Tech | 👟 Fashion | 🏠 Home | 🚗 Other |
+|---|---|---|---|---|
+| Consoles, GPUs, rare games | iPhones, laptops, cameras | Limited sneakers, watches | Furniture, IKEA items | Bikes, motorcycle parts, collectibles |
+
+Change **one keyword** and the same workflow tracks something completely different. The demo setup in this repo tracks game consoles (`xbox series`).
 
 ### Example alert
 
 ```
-🔔 there is an xbox on the market: RM 1,050  Xbox Series S 512GB with controller  https://www.carousell.com.my/p/...
+🔔 New listing: RM 1,050 | Xbox Series S 512GB with controller
+https://www.carousell.com.my/p/...
 ```
+
+### Why it's useful beyond buying
+
+- **Resellers** can catch underpriced items before anyone else.
+- **Collectors** can wait for a rare item without checking every day.
+- **Small businesses** can watch how competitors price their products.
+- **Developers** can reuse the pattern (scrape → filter → de-duplicate → notify) for any website.
 
 ---
 
@@ -37,7 +53,7 @@ flowchart LR
     B[▶️ Manual<br/>trigger] --> C
     C[🕷️ Apify<br/>scrape Carousell] --> D[✏️ Edit Fields<br/>title · price · url]
     D --> E{🔍 If<br/>title has keyword?}
-    E -- yes --> F[🧠 Remove Duplicates<br/>seen before?]
+    E -- yes --> F[🧠 Remove Duplicates<br/>already sent?]
     F -- new --> G[💬 Discord<br/>send alert]
 ```
 
@@ -46,7 +62,7 @@ flowchart LR
 | 1 | **Schedule Trigger** | Starts the workflow every 2 hours (Asia/Kuala_Lumpur time). A manual trigger is included for testing. |
 | 2 | **Apify** | Runs the [Carousell Listings Scraper](https://console.apify.com/actors/9XAXWuXpnFXAMmciQ) on the search page, sorted by newest. Returns up to 5 listings. |
 | 3 | **Edit Fields** | Keeps only `title`, `price` and `url`. Removes everything after `?` in the URL so the same listing always has the same link. |
-| 4 | **If** | Keeps listings whose title contains `xbox series` (not case-sensitive). |
+| 4 | **If** | Keeps listings whose title contains your keyword (not case-sensitive). |
 | 5 | **Remove Duplicates** | Remembers every URL from past runs and only lets new listings through. |
 | 6 | **Discord** | Sends price, title and link to a channel through a webhook. |
 
@@ -98,9 +114,9 @@ Carousell is protected by Cloudflare. Instead of listings, the request got back 
 
 ---
 
-## 🎯 Track a Different Product
+## 🎯 Track Your Own Product
 
-Change two places:
+It takes about a minute. Change two places:
 
 **1. Apify node input:** put your keyword in the URL
 ```json
