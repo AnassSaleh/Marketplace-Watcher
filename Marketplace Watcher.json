@@ -1,5 +1,5 @@
 {
-  "name": "xbox",
+  "name": "Marketplace Watcher",
   "nodes": [
     {
       "parameters": {},
@@ -120,7 +120,7 @@
     {
       "parameters": {
         "authentication": "webhook",
-        "content": "=there is an xbox on the market: {{ $json.price }} {{ $json.nameItem }}  {{ $json.url }} ",
+        "content": "=🔔 New listing: {{ $json.price }} | {{ $json.nameItem }}\n{{ $json.url }}",
         "options": {}
       },
       "type": "n8n-nodes-base.discord",
